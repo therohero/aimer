@@ -4,11 +4,77 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Aimer</title>
         <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                background: #f8f8f8;
+            }
+            h1, h3 {
+                text-align: center;
+                margin: 0.5em 0;
+            }
+            #start-button {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5em;
+                margin: 1em 0;
+            }
+            #start-button button, #click {
+                font-size: 1.3em;
+                padding: 0.7em 1.2em;
+                border-radius: 0.5em;
+                border: none;
+                background: #1976d2;
+                color: white;
+                margin: 0.2em;
+                box-shadow: 0 2px 6px #0001;
+                transition: background 0.2s;
+            }
+            #start-button button:active, #click:active {
+                background: #125ea2;
+            }
+            #click {
+                display: none;
+                position: absolute;
+                left: 50%;
+                top: 60%;
+                transform: translate(-50%, -50%);
+                z-index: 10;
+            }
+            #letter-div {
+                position: absolute;
+                top: 45%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: clamp(3rem, 18vw, 8rem);
+                font-weight: bold;
+                background: #fff;
+                border-radius: 0.3em;
+                box-shadow: 0 2px 12px #0002;
+                padding: 0.2em 0.6em;
+                user-select: none;
+                touch-action: manipulation;
+                min-width: 1.5em;
+                text-align: center;
+            }
             footer {
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 width: 100%;
+                background: #eee;
+                text-align: center;
+                font-size: 0.9em;
+                padding: 0.2em 1em;
+            }
+            @media (max-width: 600px) {
+                h1 { font-size: 1.5em; }
+                h3 { font-size: 1em; }
+                #start-button button, #click { font-size: 1em; padding: 0.6em 1em; }
+                #letter-div { font-size: clamp(2.5rem, 20vw, 5rem); }
             }
         </style>
     </head>
@@ -16,7 +82,7 @@
         <h1>Welcome to Aimer</h1>
         <h3>In this game you train your aim and reflexes.</h3>
         <h3>Click the button below to start playing!</h3>
-        <div id="start-button">
+        <div id="start-button" style="text-align: center;">
             <button onclick="startGame(1)">Level 1</button>
             <button onclick="startGame(2)">Level 2</button>
             <button onclick="startGame(3)">Level 3</button>
@@ -76,34 +142,28 @@
                 if (end) return;
                 let symbols = "!@#$%&?";
                 if (currentLevel === 2) {
-                    // Nur Großbuchstaben
                     currentLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
                 } else if (currentLevel === 3) {
-                    // Nur Zahlen
                     currentLetter = String.fromCharCode(48 + Math.floor(Math.random() * 10));
                 } else if (currentLevel === 4) {
-                    // Großbuchstaben oder Zahlen
                     if (Math.random() < 0.5) {
                         currentLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
                     } else {
                         currentLetter = String.fromCharCode(48 + Math.floor(Math.random() * 10));
                     }
                 } else if (currentLevel === 5) {
-                    // Groß- oder Kleinbuchstaben
                     if (Math.random() < 0.5) {
                         currentLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
                     } else {
                         currentLetter = String.fromCharCode(97 + Math.floor(Math.random() * 26));
                     }
                 } else if (currentLevel === 6) {
-                    // Zahlen oder Kleinbuchstaben
                     if (Math.random() < 0.5) {
                         currentLetter = String.fromCharCode(48 + Math.floor(Math.random() * 10));
                     } else {
                         currentLetter = String.fromCharCode(97 + Math.floor(Math.random() * 26));
                     }
                 } else if (currentLevel === 7) {
-                    // Groß-, Kleinbuchstaben oder Zahlen
                     let r = Math.random();
                     if (r < 1/3) {
                         currentLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
@@ -113,10 +173,8 @@
                         currentLetter = String.fromCharCode(48 + Math.floor(Math.random() * 10));
                     }
                 } else if (currentLevel === 8) {
-                    // Nur Sonderzeichen
                     currentLetter = symbols[Math.floor(Math.random() * symbols.length)];
                 } else if (currentLevel === 9) {
-                    // Groß-, Kleinbuchstaben, Zahlen oder Sonderzeichen
                     let r = Math.random();
                     if (r < 0.25) {
                         currentLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
@@ -128,7 +186,6 @@
                         currentLetter = symbols[Math.floor(Math.random() * symbols.length)];
                     }
                 } else if (currentLevel === 10) {
-                    // Alles gemischt, kürzere Zeit
                     let r = Math.random();
                     if (r < 0.2) {
                         currentLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
@@ -144,15 +201,31 @@
                 if (!letterDiv) {
                     letterDiv = document.createElement("div");
                     letterDiv.id = "letter-div";
-                    letterDiv.style.position = "absolute";
-                    letterDiv.style.top = "40%";
-                    letterDiv.style.left = "50%";
-                    letterDiv.style.transform = "translate(-50%, -50%)";
-                    letterDiv.style.fontSize = "80px";
-                    letterDiv.style.fontWeight = "bold";
                     document.body.appendChild(letterDiv);
                 }
                 letterDiv.textContent = currentLetter;
+
+                // Mobile Support: Touch-Button anzeigen
+                if (window.matchMedia("(pointer: coarse)").matches) {
+                    letterDiv.style.cursor = "pointer";
+                    letterDiv.onclick = function () {
+                        if (end) return;
+                        let input = prompt("Bitte gib das Zeichen ein:");
+                        if (!input) return;
+                        if (
+                            input === currentLetter ||
+                            input.toUpperCase() === currentLetter ||
+                            input.toLowerCase() === currentLetter
+                        ) {
+                            points++;
+                            hideLetter();
+                            showRandomSymbol();
+                        }
+                    };
+                } else {
+                    letterDiv.onclick = null;
+                }
+
                 let minTime = (currentLevel === 10) ? 200 : 500;
                 let maxTime = (currentLevel === 10) ? 700 : 1500;
                 letterTimeout = setTimeout(showRandomSymbol, minTime + Math.random() * (maxTime - minTime));
