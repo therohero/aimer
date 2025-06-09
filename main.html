@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Aimer</title>
+    </head>
+    <body>
+        <h1>Welcome to Aimer</h1>
+        <h3>In this game you train your aim and reflexes.</h3>
+        <h3>Click the button below to start playing!</h3>
+        <button id="start-button" onclick="startGame()">Start Game</button>
+        <button id="click" onclick="clicked()">Click here!</button>
+        <script>
+            let startButton = document.getElementById("start-button");
+            let clickButton = document.getElementById("click");
+            let points = 0;
+            let end = false;
+            function startGame() {
+                end = false;
+                points = 0;
+                startButton.style.display = "none";
+                clickButton.style.display = "block";
+                setTimeout(() => {
+                    end = true;
+                    clickButton.style.display = "none";
+                    alert("Time's up! You scored " + points + " points.");
+                    startButton.style.display = "block";
+                    points = 0;
+                }, 30000);
+            }
+            function clicked() {
+                if (end) return;
+                points++;
+                clickButton.style.position = "absolute";
+                clickButton.style.top = Math.random() * (window.innerHeight - 50) + "px";
+                clickButton.style.left = Math.random() * (window.innerWidth - 50) + "px";
+            }
+        </script>
+        <footer>
+            <p>Created by Therogames</p>
+            <p>Created with ❤️ by <a href="https://github.com/therohero">https://github.com/therohero</a></p>
+        </footer> 
+    </body>
+</html>
