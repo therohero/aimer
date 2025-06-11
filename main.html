@@ -95,6 +95,10 @@
             <button onclick="startGame(10)">Level 10</button>
         </div>
         <button id="click" onclick="clicked()">Click here!</button>
+        <!-- Bildschirmtastatur für Mobile -->
+        <div id="mobile-keyboard" style="display:none; position:fixed; left:0; right:0; bottom:0; background:#fff; box-shadow:0 -2px 12px #0002; padding:0.5em 0.2em 0.7em 0.2em; z-index:100;">
+            <div id="keyboard-keys" style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.4em;"></div>
+        </div>
         <script>
             let startButton = document.getElementById("start-button");
             let clickButton = document.getElementById("click");
@@ -205,25 +209,50 @@
                 }
                 letterDiv.textContent = currentLetter;
 
-                // Mobile Support: Touch-Button anzeigen
-                if (window.matchMedia("(pointer: coarse)").matches) {
+                // Mobile Support: Bildschirmtastatur anzeigen
+                if (true/*window.matchMedia("(pointer: coarse)").matches*/) {
                     letterDiv.style.cursor = "pointer";
                     letterDiv.onclick = function () {
                         if (end) return;
-                        let input = prompt("Bitte gib das Zeichen ein:");
-                        if (!input) return;
-                        if (
-                            input === currentLetter ||
-                            input.toUpperCase() === currentLetter ||
-                            input.toLowerCase() === currentLetter
-                        ) {
-                            points++;
-                            hideLetter();
-                            showRandomSymbol();
+                        // Erlaubte Zeichen für das Level bestimmen:
+                        let keys = [];
+                        if (currentLevel === 2) {
+                            for (let i = 65; i < 91; ++i) keys.push(String.fromCharCode(i));
+                        } else if (currentLevel === 3) {
+                            for (let i = 0; i < 10; ++i) keys.push(String(i));
+                        } else if (currentLevel === 4) {
+                            for (let i = 65; i < 91; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 0; i < 10; ++i) keys.push(String(i));
+                        } else if (currentLevel === 5) {
+                            for (let i = 65; i < 91; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 97; i < 123; ++i) keys.push(String.fromCharCode(i));
+                        } else if (currentLevel === 6) {
+                            for (let i = 97; i < 123; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 0; i < 10; ++i) keys.push(String(i));
+                        } else if (currentLevel === 7) {
+                            for (let i = 65; i < 91; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 97; i < 123; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 0; i < 10; ++i) keys.push(String(i));
+                        } else if (currentLevel === 8) {
+                            keys = "!@#$%&?".split("");
+                        } else if (currentLevel === 9) {
+                            for (let i = 65; i < 91; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 97; i < 123; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 0; i < 10; ++i) keys.push(String(i));
+                            keys = keys.concat("!@#$%&?".split(""));
+                        } else if (currentLevel === 10) {
+                            for (let i = 65; i < 91; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 97; i < 123; ++i) keys.push(String.fromCharCode(i));
+                            for (let i = 0; i < 10; ++i) keys.push(String(i));
+                            keys = keys.concat("!@#$%&?".split(""));
                         }
+                        showMobileKeyboard(keys);
                     };
+                    // Optional: Tastatur direkt anzeigen (ohne Klick)
+                    letterDiv.onclick();
                 } else {
                     letterDiv.onclick = null;
+                    hideMobileKeyboard();
                 }
 
                 let minTime = (currentLevel === 10) ? 200 : 500;
@@ -251,10 +280,92 @@
                     showRandomSymbol();
                 }
             });
+
+            // Bildschirmtastatur für Mobile
+            function createMobileKeyboard() {
+                let keyboardDiv = document.getElementById("keyboard-keys");
+                keyboardDiv.innerHTML = '';
+                let symbols = "!@#$%&?";
+                for (let i = 0; i < symbols.length; i++) {
+                    let key = document.createElement("div");
+                    key.textContent = symbols[i];
+                    key.style.width = "10%";
+                    key.style.padding = "0.5em";
+                    key.style.textAlign = "center";
+                    key.style.cursor = "pointer";
+                    key.style.borderRadius = "0.3em";
+                    key.style.background = "#1976d2";
+                    key.style.color = "white";
+                    key.style.transition = "background 0.2s";
+                    key.onclick = function() {
+                        if (end) return;
+                        points++;
+                        hideLetter();
+                        showRandomSymbol();
+                    };
+                    key.onmouseover = function() {
+                        this.style.background = "#125ea2";
+                    };
+                    key.onmouseout = function() {
+                        this.style.background = "#1976d2";
+                    };
+                    keyboardDiv.appendChild(key);
+                }
+            }
+
+            function showMobileKeyboard(possibleKeys) {
+                const kb = document.getElementById("mobile-keyboard");
+                const keysDiv = document.getElementById("keyboard-keys");
+                keysDiv.innerHTML = "";
+                possibleKeys.forEach(key => {
+                    const btn = document.createElement("button");
+                    btn.textContent = key;
+                    btn.style.fontSize = "2em";
+                    btn.style.padding = "0.4em 0.7em";
+                    btn.style.margin = "0.1em";
+                    btn.style.borderRadius = "0.3em";
+                    btn.style.border = "1px solid #ccc";
+                    btn.style.background = "#1976d2";
+                    btn.style.color = "white";
+                    btn.style.boxShadow = "0 1px 4px #0001";
+                    btn.onclick = function() {
+                        if (end) return;
+                        if (
+                            key === currentLetter ||
+                            key.toUpperCase() === currentLetter ||
+                            key.toLowerCase() === currentLetter
+                        ) {
+                            points++;
+                            hideLetter();
+                            hideMobileKeyboard();
+                            showRandomSymbol();
+                        }
+                    };
+                    keysDiv.appendChild(btn);
+                });
+                kb.style.display = "block";
+            }
+            function hideMobileKeyboard() {
+                document.getElementById("mobile-keyboard").style.display = "none";
+            }
+
+            window.addEventListener("resize", function() {
+                if (window.matchMedia("(pointer: coarse)").matches) {
+                    document.getElementById("mobile-keyboard").style.display = "flex";
+                } else {
+                    document.getElementById("mobile-keyboard").style.display = "none";
+                }
+            });
+
+            if (window.matchMedia("(pointer: coarse)").matches) {
+                createMobileKeyboard();
+                document.getElementById("mobile-keyboard").style.display = "flex";
+            }
         </script>
         <footer style="justify-content: flex-end;">
             <p>Created by Therogames</p>
             <p>Created with ❤️ by <a href="https://github.com/therohero">https://github.com/therohero</a></p>
+            <p>Find this repository on <a href="https://github.com/therohero/aimer">https://github.com/therohero/aimer</a></p>
         </footer> 
     </body>
 </html>
