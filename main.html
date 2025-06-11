@@ -210,7 +210,7 @@
                 letterDiv.textContent = currentLetter;
 
                 // Mobile Support: Bildschirmtastatur anzeigen
-                if (true/*window.matchMedia("(pointer: coarse)").matches*/) {
+                if (window.matchMedia("(pointer: coarse)").matches) {
                     letterDiv.style.cursor = "pointer";
                     letterDiv.onclick = function () {
                         if (end) return;
