@@ -79,6 +79,9 @@
         </style>
     </head>
     <body>
+        <div id="score" style="position:fixed;top:0.5em;right:1em;z-index:200;font-size:1.5em;font-weight:bold;color:#1976d2;background:#fff8;padding:0.3em 0.8em;border-radius:0.5em;box-shadow:0 2px 8px #0001;">
+            Punkte: 0
+        </div>
         <h1>Welcome to Aimer</h1>
         <h3>In this game you train your aim and reflexes.</h3>
         <h3>Click the button below to start playing!</h3>
@@ -108,10 +111,15 @@
             let letterTimeout;
             let currentLevel = 1;
 
+            function updateScore() {
+                document.getElementById("score").textContent = "Punkte: " + points;
+            }
+
             function startGame(level) {
                 currentLevel = level;
                 end = false;
                 points = 0;
+                updateScore();
                 startButton.style.display = "none";
                 clickButton.style.display = (level === 1) ? "block" : "none";
                 if (level === 1) {
@@ -121,6 +129,7 @@
                         alert("Time's up! You scored " + points + " points.");
                         startButton.style.display = "block";
                         points = 0;
+                        updateScore();
                     }, 30000);
                 } else {
                     showRandomSymbol();
@@ -130,6 +139,7 @@
                         alert("Time's up! You scored " + points + " points.");
                         startButton.style.display = "block";
                         points = 0;
+                        updateScore();
                     }, 30000);
                 }
             }
@@ -137,6 +147,7 @@
             function clicked() {
                 if (end) return;
                 points++;
+                updateScore();
                 clickButton.style.position = "absolute";
                 clickButton.style.top = Math.random() * (window.innerHeight - 50) + "px";
                 clickButton.style.left = Math.random() * (window.innerWidth - 50) + "px";
@@ -276,6 +287,7 @@
                     e.key.toLowerCase() === currentLetter
                 )) {
                     points++;
+                    updateScore();
                     hideLetter();
                     showRandomSymbol();
                 }
@@ -300,6 +312,7 @@
                     key.onclick = function() {
                         if (end) return;
                         points++;
+                        updateScore();
                         hideLetter();
                         showRandomSymbol();
                     };
@@ -336,6 +349,7 @@
                             key.toLowerCase() === currentLetter
                         ) {
                             points++;
+                            updateScore();
                             hideLetter();
                             hideMobileKeyboard();
                             showRandomSymbol();
