@@ -119,13 +119,7 @@
                     top: 35%;
                 }
                 #score {
-                    position: absolute;
-                    top: calc(35% - 3.5em); /* über dem Buchstaben */
-                    left: 50%;
-                    right: auto;
-                    transform: translateX(-50%);
-                    font-size: 1.2em;
-                    padding: 0.25em 0.7em;
+                    display: none;
                 }
                 #mobile-keyboard {
                     min-height: 90px;
@@ -204,9 +198,23 @@
                 if (end) return;
                 points++;
                 updateScore();
-                clickButton.style.position = "absolute";
-                clickButton.style.top = Math.random() * (window.innerHeight - 50) + "px";
-                clickButton.style.left = Math.random() * (window.innerWidth - 50) + "px";
+
+                // Mobile: Button nur mittig spawnen, nicht hinter Tastatur oder Score
+                if (window.matchMedia("(pointer: coarse)").matches) {
+                    // Bereich: mittig, ca. 30% bis 70% der Höhe, 20% bis 80% der Breite
+                    const minY = window.innerHeight * 0.30;
+                    const maxY = window.innerHeight * 0.70 - clickButton.offsetHeight;
+                    const minX = window.innerWidth * 0.20;
+                    const maxX = window.innerWidth * 0.80;
+                    const top = Math.random() * (maxY - minY) + minY;
+                    const left = Math.random() * (maxX - minX) + minX;
+                    clickButton.style.top = `${top}px`;
+                    clickButton.style.left = `${left}px`;
+                } else {
+                    // Desktop: wie gehabt
+                    clickButton.style.top = Math.random() * (window.innerHeight - 50) + "px";
+                    clickButton.style.left = Math.random() * (window.innerWidth - 50) + "px";
+                }
             }
 
             function showRandomSymbol() {
