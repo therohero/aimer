@@ -60,6 +60,20 @@
                 min-width: 1.5em;
                 text-align: center;
             }
+            #score {
+                position: fixed;
+                top: 0.5em;
+                right: 1em;
+                z-index: 200;
+                font-size: 1.5em;
+                font-weight: bold;
+                color: #1976d2;
+                background: #fff8;
+                padding: 0.3em 0.8em;
+                border-radius: 0.5em;
+                box-shadow: 0 2px 8px #0001;
+                transition: top 0.3s, left 0.3s, right 0.3s;
+            }
             footer {
                 position: fixed;
                 bottom: 0;
@@ -70,11 +84,53 @@
                 font-size: 0.9em;
                 padding: 0.2em 1em;
             }
+            #mobile-keyboard {
+                display: none;
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #fff;
+                box-shadow: 0 -2px 12px #0002;
+                padding: 0.2em 0.1em 0.3em 0.1em;
+                z-index: 100;
+                justify-content: center;
+                align-items: flex-end;
+                min-height: 70px;
+            }
+            #keyboard-keys button {
+                font-size: 1.1em;
+                padding: 0.2em 0.35em;
+                margin: 0.05em;
+                border-radius: 0.2em;
+                border: 1px solid #ccc;
+                background: #1976d2;
+                color: white;
+                box-shadow: 0 1px 2px #0001;
+                min-width: 2.1em;
+            }
             @media (max-width: 600px) {
                 h1 { font-size: 1.5em; }
                 h3 { font-size: 1em; }
                 #start-button button, #click { font-size: 1em; padding: 0.6em 1em; }
-                #letter-div { font-size: clamp(2.5rem, 20vw, 5rem); }
+                #letter-div {
+                    font-size: clamp(2.5rem, 20vw, 5rem);
+                    /* Abstand nach unten, damit der Buchstabe nicht von der Tastatur verdeckt wird */
+                    top: 35%;
+                }
+                #score {
+                    position: absolute;
+                    top: calc(35% - 3.5em); /* über dem Buchstaben */
+                    left: 50%;
+                    right: auto;
+                    transform: translateX(-50%);
+                    font-size: 1.2em;
+                    padding: 0.25em 0.7em;
+                }
+                #mobile-keyboard {
+                    min-height: 90px;
+                    padding-bottom: env(safe-area-inset-bottom, 1.5em); /* für Geräte ohne Home-Button */
+                }
             }
         </style>
     </head>
@@ -99,8 +155,8 @@
         </div>
         <button id="click" onclick="clicked()">Click here!</button>
         <!-- Bildschirmtastatur für Mobile -->
-        <div id="mobile-keyboard" style="display:none; position:fixed; left:0; right:0; bottom:0; background:#fff; box-shadow:0 -2px 12px #0002; padding:0.5em 0.2em 0.7em 0.2em; z-index:100;">
-            <div id="keyboard-keys" style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.4em;"></div>
+        <div id="mobile-keyboard" style="display:none; position:fixed; left:0; right:0; bottom:0; background:#fff; box-shadow:0 -2px 12px #0002; padding:0.2em 0.1em 0.3em 0.1em; z-index:100; justify-content:center; align-items:flex-end;">
+            <div id="keyboard-keys" style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.15em;"></div>
         </div>
         <script>
             let startButton = document.getElementById("start-button");
@@ -221,7 +277,7 @@
                 letterDiv.textContent = currentLetter;
 
                 // Mobile Support: Bildschirmtastatur anzeigen
-                if (window.matchMedia("(pointer: coarse)").matches) {
+                if (matchMedia("(pointer: coarse)").matches) {
                     letterDiv.style.cursor = "pointer";
                     letterDiv.onclick = function () {
                         if (end) return;
@@ -333,14 +389,15 @@
                 possibleKeys.forEach(key => {
                     const btn = document.createElement("button");
                     btn.textContent = key;
-                    btn.style.fontSize = "2em";
-                    btn.style.padding = "0.4em 0.7em";
-                    btn.style.margin = "0.1em";
-                    btn.style.borderRadius = "0.3em";
+                    btn.style.fontSize = "1.1em";
+                    btn.style.padding = "0.2em 0.35em";
+                    btn.style.margin = "0.05em";
+                    btn.style.borderRadius = "0.2em";
                     btn.style.border = "1px solid #ccc";
                     btn.style.background = "#1976d2";
                     btn.style.color = "white";
-                    btn.style.boxShadow = "0 1px 4px #0001";
+                    btn.style.boxShadow = "0 1px 2px #0001";
+                    btn.style.minWidth = "2.1em";
                     btn.onclick = function() {
                         if (end) return;
                         if (
@@ -357,7 +414,7 @@
                     };
                     keysDiv.appendChild(btn);
                 });
-                kb.style.display = "block";
+                kb.style.display = "flex";
             }
             function hideMobileKeyboard() {
                 document.getElementById("mobile-keyboard").style.display = "none";
